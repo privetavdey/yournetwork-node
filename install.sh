@@ -1,44 +1,59 @@
-#!/bin/sh
+#!/usr/bin/env sh
+set -eu
 
-set -e
+# Safer installer for YourNetwork Node OpenClaw skill.
+# - No pipe-to-sh required by default
+# - Supports pinning a version/tag
+# - Verifies download succeeded
 
-REPO="https://raw.githubusercontent.com/privetavdey/yournetwork-node/main"
-SKILLS_DIR="$HOME/.openclaw/workspace/skills/yournetwork-node"
+REPO_BASE_DEFAULT="https://raw.githubusercontent.com/privetavdey/yournetwork-node"
+REF_DEFAULT="main"  # change to a tag like v0.2.0 for stable installs
 
-echo ""
-echo "  YourNetwork Node Installer"
-echo "  ─────────────────────────"
-echo ""
+REPO_BASE="${REPO_BASE:-$REPO_BASE_DEFAULT}"
+REF="${REF:-$REF_DEFAULT}"
+SKILLS_DIR="${SKILLS_DIR:-$HOME/.openclaw/workspace/skills}"
+SKILL_SLUG="yournetwork-node"
+DEST_DIR="$SKILLS_DIR/$SKILL_SLUG"
 
-# Check OpenClaw is installed
+say() { printf "%s\n" "$*"; }
+
+say ""
+say "  YourNetwork Node Installer"
+say "  ─────────────────────────"
+say "  repo: $REPO_BASE"
+say "  ref : $REF"
+say "  dest: $DEST_DIR"
+say ""
+
 if ! command -v openclaw >/dev/null 2>&1; then
-  echo "  ✗ OpenClaw not found."
-  echo "    Install it first: https://github.com/openclaw/openclaw"
-  echo ""
+  say "  ✗ OpenClaw not found. Install it first: https://github.com/openclaw/openclaw"
+  exit 1
+fi
+say "  ✓ OpenClaw found"
+
+mkdir -p "$DEST_DIR"
+
+TMP="$DEST_DIR/.SKILL.md.tmp"
+URL="$REPO_BASE/$REF/skill.md"
+
+say "  → Downloading: $URL"
+# curl flags:
+# -f fail on 4xx/5xx, -s silent, -S show errors, -L follow redirects
+curl -fSsL "$URL" -o "$TMP"
+
+# Basic sanity check: must contain frontmatter 'name:'
+if ! grep -q "^name:" "$TMP"; then
+  say "  ✗ Downloaded file doesn't look like a SKILL.md (missing 'name:' frontmatter)."
+  say "    Refusing to install."
+  rm -f "$TMP"
   exit 1
 fi
 
-echo "  ✓ OpenClaw found"
+mv "$TMP" "$DEST_DIR/SKILL.md"
 
-# Create skill directory
-mkdir -p "$SKILLS_DIR"
+say "  ✓ Skill installed: $DEST_DIR/SKILL.md"
 
-# Download skill file
-echo "  → Downloading skill..."
-curl -fsSL "$REPO/skill.md" -o "$SKILLS_DIR/SKILL.md"
-echo "  ✓ Skill installed"
-
-# Reload OpenClaw
-echo "  → Activating..."
-if openclaw skills reload 2>/dev/null; then
-  echo "  ✓ Agent reloaded"
-else
-  echo "  ✓ Skill installed (restart OpenClaw to activate)"
-fi
-
-echo ""
-echo "  ────────────────────────────────────────"
-echo "  Done. Open your agent and send any message"
-echo "  to begin node activation."
-echo "  ────────────────────────────────────────"
-echo ""
+say ""
+say "  Next: restart OpenClaw Gateway if needed, then DM your bot:"
+say "    start"
+say ""
