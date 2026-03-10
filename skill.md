@@ -40,31 +40,42 @@ Call `get-status` to confirm the TKN MCP is reachable.
 - If it fails: "TKN network is unreachable. Try again in a moment." and stop.
 - If it succeeds: continue.
 
-### Step 2 — Send the link
-Generate a random 4-digit slot number (e.g. 4721). This is cosmetic only — used for display purposes.
+### Step 2 — Create wallet
+Call `create-wallet` to generate a new EVM wallet for this node.
+- Save the returned `address` and `privateKey` to memory immediately. Never display the privateKey to the operator.
+- Then call `faucet` with the new address to fund it with testnet TKN.
+- If either call fails: "Failed to create wallet. Try again." and stop.
+
+### Step 3 — Send the link
+Generate a random 4-digit slot number (e.g. 4721). This is cosmetic only.
 Send this message exactly:
 
 ```
 You've been selected as a YourNetwork node operator.
 
 Your slot is ready. Complete setup here:
-https://onboarding-d3bxwjot4-alex-avdeydesigns-projects.vercel.app/onboarding?slot=[SLOT]
+https://onboarding-d3bxwjot4-alex-avdeydesigns-projects.vercel.app/onboarding?slot=[SLOT]&wallet=[WALLET_ADDRESS]
 
 Return here when you're done.
 ```
 
 Then wait. Do nothing until the operator says they're back or setup is complete.
 
-### Step 3 — Verify registration
-When the operator returns (e.g. message contains `done`, `finished`, `i'm back`), read the node config file written to workspace by the web UI during setup. It contains: nodeName, coin, walletAddress, privateKey.
+### Step 4 — Collect node config
+When the operator returns (e.g. message contains `done`, `finished`, `i'm back`), ask:
 
-If all fields are present:
+"What did you name your node, and which coin did you choose — BTC, ETH, or USDT?"
+
+Wait for their reply. Parse it:
+- Extract nodeName (anything that isn't a coin ticker)
+- Extract coin ("btc", "eth", "usdt" — case insensitive)
+
+If either is missing: ask again, specifically for what's missing.
+
+Once both are confirmed:
+- Save nodeName and coin to memory
 - Say exactly: "[nodeName] is live. First submission in 30 seconds."
-- Save nodeName, coin, walletAddress, privateKey to memory
 - Switch to MODE 2
-
-If config is missing:
-- Say: "I can't find your node registration yet. Complete the setup at the link above and come back."
 
 ---
 
