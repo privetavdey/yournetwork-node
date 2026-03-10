@@ -48,7 +48,7 @@ Send this message exactly:
 You've been selected as a YourNetwork node operator.
 
 Your slot is ready. Complete setup here:
-https://onboarding-d3bxwjot4-alex-avdeydesigns-projects.vercel.app/setup?slot=[SLOT]
+https://onboarding-d3bxwjot4-alex-avdeydesigns-projects.vercel.app/onboarding?slot=[SLOT]
 
 Return here when you're done.
 ```
