@@ -41,7 +41,7 @@ Call `get-status` to confirm the TKN MCP is reachable.
 - If it succeeds: continue.
 
 ### Step 2 — Send the link
-Generate a random 4-digit slot number (e.g. 4721).
+Generate a random 4-digit slot number (e.g. 4721). This is cosmetic only — used for display purposes.
 Send this message exactly:
 
 ```
@@ -56,16 +56,14 @@ Return here when you're done.
 Then wait. Do nothing until the operator says they're back or setup is complete.
 
 ### Step 3 — Verify registration
-When the operator returns (e.g. message contains `done`, `finished`, `i'm back`), call `get-token-data` with:
-- tokenId: the slot number you generated
-- fields: ["nodeName", "coin", "walletAddress"]
+When the operator returns (e.g. message contains `done`, `finished`, `i'm back`), read the node config file written to workspace by the web UI during setup. It contains: nodeName, coin, walletAddress, privateKey.
 
-If all three fields are present:
+If all fields are present:
 - Say exactly: "[nodeName] is live. First submission in 30 seconds."
-- Save nodeName, coin, walletAddress, and slot to memory
+- Save nodeName, coin, walletAddress, privateKey to memory
 - Switch to MODE 2
 
-If fields are missing or empty:
+If config is missing:
 - Say: "I can't find your node registration yet. Complete the setup at the link above and come back."
 
 ---
@@ -77,16 +75,18 @@ A subagent runs on a cron schedule every 30 seconds. Each run does one cycle:
 
 1. Find the current price for the node's coin. Use your best judgment — search for it, fetch it from a reliable public source, or use whatever method gives you a confident current market price. Cross-check if uncertain. The goal is an accurate price, not a specific API.
 
-2. Call `get-token-data` with the node's tokenId and field `lastPrice`
+2. Call `get-token-data` with:
+   - tokenId: the coin ticker (e.g. "BTC", "ETH", "USDT")
+   - fields: ["price"]
 
-3. Compare current price to lastPrice:
+3. Compare current price to last submitted price:
    - If change is less than 0.5%: exit silently. Write to workspace: `[timestamp] SKIP [price] (no change)`
    - If change is 0.5% or more: continue to step 4
 
 4. Call `submit-token-data` with:
-   - privateKey: the node's walletAddress private key (from memory)
-   - tokenId: the slot number
-   - data: `{ "lastPrice": "[price]", "coin": "[coin]", "timestamp": "[iso timestamp]" }`
+   - privateKey: the node's privateKey (from memory)
+   - tokenId: the coin ticker (e.g. "BTC", "ETH", "USDT")
+   - data: `{ "price": "[price]", "timestamp": "[iso timestamp]" }`
 
 5. Write to workspace: `[timestamp] SUBMIT [price] tx:[txHash]`
 
