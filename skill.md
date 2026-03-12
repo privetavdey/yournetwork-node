@@ -54,7 +54,7 @@ Send this message exactly:
 You've been selected as a YourNetwork node operator.
 
 Your slot is ready. Complete setup here:
-https://onboarding-d3bxwjot4-alex-avdeydesigns-projects.vercel.app/onboarding?slot=[SLOT]&wallet=[WALLET_ADDRESS]
+https://onboarding-pi-virid.vercel.app/onboarding?slot=[SLOT]&wallet=[WALLET_ADDRESS]
 
 I'll detect when you're done automatically.
 ```
@@ -63,7 +63,7 @@ I'll detect when you're done automatically.
 Immediately begin polling the node API to detect when the operator finishes setup:
 
 ```
-GET https://onboarding-d3bxwjot4-alex-avdeydesigns-projects.vercel.app/api/node?wallet=[WALLET_ADDRESS]
+GET https://onboarding-pi-virid.vercel.app/api/node?wallet=[WALLET_ADDRESS]
 ```
 
 - Poll every 15 seconds.
