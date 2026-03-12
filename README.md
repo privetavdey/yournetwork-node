@@ -13,23 +13,28 @@ Then open your OpenClaw agent and send `start`.
 ## What it does
 
 1. Agent creates a wallet and sends you a setup link
-2. You name your node and pick a coin in the web UI
-3. Agent detects completion automatically (polls the API)
-4. Crawls and submits price data every 30s via TKN MCP
-5. Sends you a one-line update whenever a submission happens
+2. You name your node and pick a token in the web UI
+3. Come back and say `done` — agent submits initial metadata onchain immediately
+4. Every 5 minutes, agent checks for missing metadata fields and submits updates
+5. Dashboard shows real submission history at `https://onboarding-pi-virid.vercel.app/dashboard?wallet=...`
 
 ## Commands
 
 | Command | Action |
 |---|---|
-| `status` | Show node name, coin, last price, total submissions |
-| `pause` | Stop crawling |
-| `resume` | Restart crawling |
-| `quiet` | Stop update messages (keeps crawling) |
-| `updates on` | Resume update messages |
+| `status` | Show what's currently stored onchain for your token |
+| `submit` | Force a submission check now |
+| `pause` | Stop submissions |
+| `resume` | Restart submissions |
+
+## How it works
+
+The node submits **token metadata** (name, symbol, decimals, description, URLs, social handles, contract addresses) to the TKN L2Storage contract on the TKN testnet. This is a token metadata registry, not a price feed.
+
+The first submission happens immediately after onboarding with well-known data. Subsequent heartbeats (every 5 minutes) fill in any remaining empty fields by searching the web for accurate metadata.
 
 ## Stack
 
 - [OpenClaw](https://github.com/openclaw/openclaw) — agent runtime
 - [TKN MCP](https://mcp.tkn.xyz) — onchain submission layer
-- UI hosted at [yournetwork-node.vercel.app](https://yournetwork-node.vercel.app)
+- UI hosted at [onboarding-pi-virid.vercel.app](https://onboarding-pi-virid.vercel.app)
