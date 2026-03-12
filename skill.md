@@ -13,8 +13,8 @@ heartbeat_interval: 5m
 ## Quick start (operator)
 1) Install this skill.
 2) In Telegram DM with the bot, send: `start`
-3) Open the setup link.
-4) Come back and say: `done`
+3) Open the setup link, name your node, pick a coin.
+4) The agent detects completion automatically and starts crawling.
 
 ---
 
@@ -56,24 +56,22 @@ You've been selected as a YourNetwork node operator.
 Your slot is ready. Complete setup here:
 https://onboarding-d3bxwjot4-alex-avdeydesigns-projects.vercel.app/onboarding?slot=[SLOT]&wallet=[WALLET_ADDRESS]
 
-Return here when you're done.
+I'll detect when you're done automatically.
 ```
 
-Then wait. Do nothing until the operator says they're back or setup is complete.
+### Step 4 — Poll for completion
+Immediately begin polling the node API to detect when the operator finishes setup:
 
-### Step 4 — Collect node config
-When the operator returns (e.g. message contains `done`, `finished`, `i'm back`), ask:
+```
+GET https://onboarding-d3bxwjot4-alex-avdeydesigns-projects.vercel.app/api/node?wallet=[WALLET_ADDRESS]
+```
 
-"What did you name your node, and which coin did you choose — BTC, ETH, or USDT?"
-
-Wait for their reply. Parse it:
-- Extract nodeName (anything that isn't a coin ticker)
-- Extract coin ("btc", "eth", "usdt" — case insensitive)
-
-If either is missing: ask again, specifically for what's missing.
-
-Once both are confirmed:
-- Save nodeName and coin to memory
+- Poll every 15 seconds.
+- While the response returns `{ "node": null }`, keep polling silently. Do not message the operator.
+- If the operator sends a message while polling (e.g. "done", "finished", "ready"), reply: "Checking…" and poll once immediately.
+- When the response returns a non-null `node` object, extract:
+  - `node.name` → save as nodeName
+  - `node.coin` → save as coin
 - Say exactly: "[nodeName] is live. First submission in 30 seconds."
 - Switch to MODE 2
 
