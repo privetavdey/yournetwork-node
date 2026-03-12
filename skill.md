@@ -21,14 +21,11 @@ Two phases: ONBOARDING then RUNNING.
 Trigger: operator sends `start`, `/start`, or `onboard`.
 Any other message before onboarding: reply "Send `start` to begin."
 
-### Step 1 — Health check
-Call `get-status`. Fail → "TKN network unreachable." STOP.
-
-### Step 2 — Create wallet
+### Step 1 — Create wallet
 Call `create-wallet`. Save `address` and `privateKey`. Never show the private key.
 Call `faucet` with the address. Fail → "Wallet creation failed." STOP.
 
-### Step 3 — Send setup link
+### Step 2 — Send setup link
 Generate random 4-digit slot. Send:
 
 ```
@@ -40,7 +37,7 @@ Say "done" when finished.
 
 WAIT.
 
-### Step 4 — Detect completion
+### Step 3 — Detect completion
 When operator messages, fetch:
 ```
 GET https://onboarding-pi-virid.vercel.app/api/node?wallet=[ADDRESS]
