@@ -97,7 +97,8 @@ Look at `emptyFields` in the response. For each empty field:
 - All values must be strings
 
 **Step 4 — Present findings to operator:**
-Show exactly what you plan to submit in a clear format:
+
+If you found data for at least one field, show what you plan to submit:
 
 ```
 [SYMBOL] — tokenId: [TOKEN_ID]
@@ -114,6 +115,20 @@ Could not find: [list any fields still unknown]
 
 Approve? (yes / no / edit)
 ```
+
+If you found **nothing** — no known metadata and web search returned no results:
+
+```
+[SYMBOL] — tokenId: [TOKEN_ID]
+I couldn't find any metadata for [SYMBOL]. This might be a very new or obscure token.
+
+Options:
+- Give me some details and I'll submit what you provide
+- Say "skip" to remove it
+- Say "retry" and I'll search again
+```
+
+If the operator provides data manually, use it. Present it back for confirmation before submitting.
 
 **WAIT for operator response.** Do NOT submit until they say yes/approve.
 
