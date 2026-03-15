@@ -52,9 +52,15 @@ This creates a wallet server-side and returns:
 - `node.wallet` — the public address
 - `apiKey` — the authentication key for all future API calls
 
-Save `apiKey` to memory. **This is the only secret you hold.** The private key is encrypted server-side and never exposed.
+Save `apiKey` and `node.wallet` to memory. **The API key is the only secret you hold.** The private key is encrypted server-side and never exposed.
 
-### Step 2 — Send onboarding link
+### Step 2 — Fund the wallet
+
+Call `faucet` with the wallet address to give it testnet funds for gas. This only needs the public address — no private key.
+
+If faucet fails: "Faucet unavailable. The node will work but submissions may fail until funded." Continue anyway.
+
+### Step 3 — Send onboarding link
 
 ```
 Your node is ready. Complete setup:
@@ -65,7 +71,7 @@ When you're done, say "done".
 
 WAIT for operator.
 
-### Step 3 — Detect completion
+### Step 4 — Detect completion
 
 When operator messages, check the node:
 ```
